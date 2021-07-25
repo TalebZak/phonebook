@@ -1,25 +1,78 @@
-import logo from './logo.svg';
-import './App.css';
+import React, {useState, useEffect} from 'react'
+import PersonService from './services/PersonService'
+import Search from './components/Search'
+import Person from './components/Person'
+const App = () => {
+    const [persons, setPersons] = useState([]);
+  const [newName, newNameState] = useState('');
+  const [newNum, setnewNum] = useState('');
+  const [result, setResult] = useState(persons);
+  useEffect(() =>  {
+         PersonService.getAll().then(data => {
+             setPersons(data)
+             setResult(data)
+         }
+         )
+      }, []);
+  const changeNum = (event) => {
+      event.preventDefault()
+      setnewNum(event.target.value)
+  }
+  const changeName = (event) => {
+      event.preventDefault()
+      newNameState(event.target.value);
+  }
+  const addPerson = (event) => {
+      event.preventDefault()
+      for(const person of persons){
+          if(person.name === newName || person.number === newNum){
+              alert(`This contact is already added to phonebook`)
+              return
+          }
+      }
+      if(newName === '' || newNum === '')
+          alert(`A field is still empty`)
+      const obj = {name:newName,number: newNum}
+      PersonService.create(obj).then(r => setPersons(persons.concat(
+          r
+          )
+      ))
 
-function App() {
+
+      newNameState('')
+      setnewNum('')
+  };
+
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+      <div>
+        <h2>Phonebook</h2>
+          <Search persons={persons} setResult={setResult}/>
+          <h3>add a new</h3>
+        <form onSubmit={addPerson}>
+          <div>
+            name: <input value={newName} onChange={changeName} />
+          </div>
+            <div>
+                Phone Number: <input value={newNum} onChange={changeNum} />
+            </div>
+          <div>
+            <button type="submit">add</button>
+          </div>
+        </form>
+        <h2>Numbers</h2>
+          {result.map(a =>
+              <Person name={a.name}
+                      key={a.id}
+                      phoneNum={a.number}
+                      id={a.id}
+                      setPersons={setPersons}
+                      persons={persons}
+              />
+          )
+          }
+      </div>)
 }
 
-export default App;
+export default App
