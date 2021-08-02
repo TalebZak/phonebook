@@ -1,7 +1,8 @@
-import React from 'react'
+import React, {useState} from 'react'
 import PersonService from '../services/PersonService'
-
-const Person = ({name,phoneNum,id,persons,setPersons}) => {
+import Updateform from './Updateform'
+const Person = ({name, number, id, persons, setPersons, index}) => {
+    const [edit, setEdit] = useState(false)
     const deletePerson = () =>{
         PersonService.deleteOne(id).then(r => console.log(r));
         setPersons(persons.filter(person=>person.id !== id))
@@ -13,11 +14,24 @@ const Person = ({name,phoneNum,id,persons,setPersons}) => {
         }
         return false
     }
-
+    let display;
+    if(edit){
+        display = <Updateform name={name}
+                              number={number}
+                              setEdit={setEdit}
+                              id={id}
+                              persons={persons}
+                              setPersons={setPersons}
+                              index = {index}/>
+    }
+    else{
+        display = <p> {name} {number}</p>
+    }
     return(
         <div>
-            <p> {name} {phoneNum}</p>
+            {display}
             <button onClick = {confirm}>delete </button>
+            {!edit && <button onClick = {() => setEdit(true)}>Modify</button>}
         </div>
 
     )

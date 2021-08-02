@@ -24,15 +24,19 @@ const App = () => {
   }
   const addPerson = (event) => {
       event.preventDefault()
+      if(newName === '' || newNum === ''){
+          alert(`A field is still empty`)
+          return
+      }
+
+      const obj = {name:newName,number: newNum}
       for(const person of persons){
           if(person.name === newName || person.number === newNum){
               alert(`This contact is already added to phonebook`)
               return
           }
       }
-      if(newName === '' || newNum === '')
-          alert(`A field is still empty`)
-      const obj = {name:newName,number: newNum}
+
       PersonService.create(obj).then(r => setPersons(persons.concat(
           r
           )
@@ -62,13 +66,14 @@ const App = () => {
           </div>
         </form>
         <h2>Numbers</h2>
-          {result.map(a =>
+          {result.map((a, index) =>
               <Person name={a.name}
                       key={a.id}
-                      phoneNum={a.number}
+                      number={a.number}
                       id={a.id}
                       setPersons={setPersons}
                       persons={persons}
+                      index = {index}
               />
           )
           }

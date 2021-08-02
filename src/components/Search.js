@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+
 const Search = ({setResult,persons}) => {
     const [search, setsearch] = useState('');
     const changeSearch = (event) => {
